@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShortLink API Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <style>
+        .api-docs {
+            display: flex;
+            min-height: calc(100vh - 70px);
+            margin-top: 70px;
+        }
+        
+        .api-sidebar {
+            width: 300px;
+            background: var(--dark-color);
+            color: white;
+            padding: 30px 0;
+            position: fixed;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+        
+        .api-content {
+            flex: 1;
+            margin-left: 300px;
+            padding: 40px;
+            background: white;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 25px;
+        }
+        
+        .sidebar-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #adb5bd;
+            margin: 0 20px 15px;
+            letter-spacing: 1px;
+        }
+        
+        .sidebar-link {
+            display: block;
+            padding: 10px 20px;
+            color: #dee2e6;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            background: rgba(0, 102, 255, 0.1);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+        
+        .content-section {
+            margin-bottom: 60px;
+        }
+        
+        .content-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+        
+        .content-section h2 {
+            font-size: 2rem;
+            margin: 40px 0 20px;
+            color: var(--dark-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+        
+        .content-section h3 {
+            font-size: 1.5rem;
+            margin: 30px 0 15px;
+            color: var(--dark-color);
+        }
+        
+        .content-section h4 {
+            font-size: 1.2rem;
+            margin: 25px 0 10px;
+            color: var(--secondary-color);
+        }
+        
+        .endpoint-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+        }
+        
+        .endpoint-header {
+            background: var(--light-color);
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .endpoint-method {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 15px;
+            text-transform: uppercase;
+        }
+        
+        .method-post { background: #28a745; color: white; }
+        .method-get { background: #17a2b8; color: white; }
+        .method-put { background: #ffc107; color: #333; }
+        .method-delete { background: #dc3545; color: white; }
+        
+        .endpoint-url {
+            font-family: 'Monaco', monospace;
+            font-size: 1.1rem;
+            color: var(--dark-color);
+            font-weight: 500;
+        }
+        
+        .endpoint-description {
+            color: var(--secondary-color);
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+        
+        .endpoint-body {
+            padding: 20px;
+        }
+        
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .param-table th,
+        .param-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .param-table th {
+            background: var(--light-color);
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .param-name {
+            font-family: 'Monaco', monospace;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .param-type {
+            background: #e9ecef;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-family: 'Monaco', monospace;
+        }
+        
+        .param-required {
+            color: var(--danger-color);
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        
+        .param-optional {
+            color: var(--secondary-color);
+            font-size: 0.8rem;
+        }
+        
+        .code-example {
+            background: #2d3748;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .code-header {
+            background: #1a202c;
+            padding: 15px 20px;
+            color: white;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .code-tabs {
+            display: flex;
+            gap: 0;
+            background: #1a202c;
+            border-bottom: 1px solid #4a5568;
+        }
+        
+        .code-tab {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            color: #a0aec0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .code-tab.active,
+        .code-tab:hover {
+            color: white;
+            background: #2d3748;
+            border-bottom-color: var(--primary-color);
+        }
+        
+        .code-content {
+            padding: 0;
+        }
+        
+        .code-tab-content {
+            display: none;
+        }
+        
+        .code-tab-content.active {
+            display: block;
+        }
+        
+        .copy-code-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+        
+        .copy-code-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        pre {
+            margin: 0;
+            padding: 20px;
+            overflow-x: auto;
+        }
+        
+        code {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .response-codes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .response-code {
+            padding: 15px;
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+        
+        .response-200 { background: rgba(40, 167, 69, 0.1); border: 1px solid #28a745; }
+        .response-201 { background: rgba(40, 167, 69, 0.1); border: 1px solid #28a745; }
+        .response-400 { background: rgba(220, 53, 69, 0.1); border: 1px solid #dc3545; }
+        .response-401 { background: rgba(220, 53, 69, 0.1); border: 1px solid #dc3545; }
+        .response-404 { background: rgba(220, 53, 69, 0.1); border: 1px solid #dc3545; }
+        .response-429 { background: rgba(255, 193, 7, 0.1); border: 1px solid #ffc107; }
+        
+        .response-code-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .response-code-text {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+        
+        .auth-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+        }
+        
+        .auth-info h4 {
+            margin: 0 0 15px 0;
+            color: white;
+        }
+        
+        .sdk-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .sdk-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .sdk-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+        
+        .sdk-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .sdk-python { color: #3776ab; }
+        .sdk-javascript { color: #f7df1e; }
+        .sdk-curl { color: #073551; }
+        .sdk-php { color: #777bb4; }
+        
+        .rate-limit-info {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffc107;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+        }
+        
+        .rate-limit-info h4 {
+            color: #856404;
+            margin: 0 0 10px 0;
+        }
+        
+        .pagination-info {
+            background: rgba(23, 162, 184, 0.1);
+            border: 1px solid #17a2b8;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+        }
+        
+        .pagination-info h4 {
+            color: #0c5460;
+            margin: 0 0 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .api-docs {
+                flex-direction: column;
+            }
+            
+            .api-sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+            
+            .api-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-link"></i>
+                <span>ShortLink</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="demo.html" class="nav-link">Live Demo</a>
+                <a href="#getting-started" class="nav-link">Documentation</a>
+                <a href="#authentication" class="nav-link">API</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="api-docs">
+        <aside class="api-sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Getting Started</div>
+                <a href="#introduction" class="sidebar-link">Introduction</a>
+                <a href="#authentication" class="sidebar-link">Authentication</a>
+                <a href="#rate-limiting" class="sidebar-link">Rate Limiting</a>
+                <a href="#errors" class="sidebar-link">Error Handling</a>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">Endpoints</div>
+                <a href="#create-url" class="sidebar-link">Create Short URL</a>
+                <a href="#get-url" class="sidebar-link">Get URL Details</a>
+                <a href="#update-url" class="sidebar-link">Update URL</a>
+                <a href="#delete-url" class="sidebar-link">Delete URL</a>
+                <a href="#list-urls" class="sidebar-link">List URLs</a>
+                <a href="#bulk-create" class="sidebar-link">Bulk Operations</a>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">Analytics</div>
+                <a href="#url-analytics" class="sidebar-link">URL Analytics</a>
+                <a href="#summary-analytics" class="sidebar-link">Summary Analytics</a>
+                <a href="#real-time" class="sidebar-link">Real-time Data</a>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">Advanced</div>
+                <a href="#webhooks" class="sidebar-link">Webhooks</a>
+                <a href="#custom-domains" class="sidebar-link">Custom Domains</a>
+                <a href="#sdks" class="sidebar-link">SDKs & Libraries</a>
+            </div>
+        </aside>
+
+        <main class="api-content">
+            <section id="introduction" class="content-section">
+                <h1>ShortLink API Documentation</h1>
+                <p>Welcome to the ShortLink API! Our REST API allows you to programmatically create, manage, and track shortened URLs. This documentation will help you integrate ShortLink into your applications.</p>
+                
+                <h3>Base URL</h3>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span>Base URL</span>
+                    </div>
+                    <pre><code>https://api.shortlink.com/v1</code></pre>
+                </div>
+
+                <h3>Features</h3>
+                <ul style="margin: 20px 0; line-height: 2;">
+                    <li>✅ Create and manage short URLs</li>
+                    <li>✅ Advanced analytics and tracking</li>
+                    <li>✅ Custom short codes and domains</li>
+                    <li>✅ Bulk operations</li>
+                    <li>✅ Real-time webhooks</li>
+                    <li>✅ Password protection and expiration</li>
+                    <li>✅ QR code generation</li>
+                </ul>
+            </section>
+
+            <section id="authentication" class="content-section">
+                <h2>Authentication</h2>
+                <p>ShortLink API uses API key authentication. Include your API key in the Authorization header of each request.</p>
+
+                <div class="auth-info">
+                    <h4><i class="fas fa-key"></i> API Key Authentication</h4>
+                    <p>Include your API key in the <code>Authorization</code> header:</p>
+                    <code>Authorization: Bearer YOUR_API_KEY</code>
+                </div>
+
+                <h3>Getting Your API Key</h3>
+                <ol style="line-height: 2;">
+                    <li>Sign up for a ShortLink account</li>
+                    <li>Go to your dashboard settings</li>
+                    <li>Navigate to the "API Keys" section</li>
+                    <li>Generate a new API key</li>
+                    <li>Copy and securely store your API key</li>
+                </ol>
+
+                <div class="code-example">
+                    <div class="code-tabs">
+                        <button class="code-tab active" data-tab="curl-auth">cURL</button>
+                        <button class="code-tab" data-tab="js-auth">JavaScript</button>
+                        <button class="code-tab" data-tab="python-auth">Python</button>
+                    </div>
+                    <div class="code-content">
+                        <div class="code-tab-content active" id="curl-auth">
+                            <pre><code>curl -X GET \
+  https://api.shortlink.com/v1/urls \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'</code></pre>
+                        </div>
+                        <div class="code-tab-content" id="js-auth">
+                            <pre><code>const headers = {
+  'Authorization': 'Bearer YOUR_API_KEY',
+  'Content-Type': 'application/json'
+};
+
+fetch('https://api.shortlink.com/v1/urls', {
+  method: 'GET',
+  headers: headers
+})
+.then(response => response.json())
+.then(data => console.log(data));</code></pre>
+                        </div>
+                        <div class="code-tab-content" id="python-auth">
+                            <pre><code>import requests
+
+headers = {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+}
+
+response = requests.get(
+    'https://api.shortlink.com/v1/urls', 
+    headers=headers
+)
+data = response.json()</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="rate-limiting" class="content-section">
+                <h2>Rate Limiting</h2>
+                <p>To ensure fair usage and maintain service quality, our API implements rate limiting.</p>
+
+                <div class="rate-limit-info">
+                    <h4><i class="fas fa-tachometer-alt"></i> Rate Limits</h4>
+                    <ul style="margin: 10px 0;">
+                        <li><strong>Free Plan:</strong> 1,000 requests per hour</li>
+                        <li><strong>Pro Plan:</strong> 10,000 requests per hour</li>
+                        <li><strong>Enterprise Plan:</strong> 100,000 requests per hour</li>
+                    </ul>
+                </div>
+
+                <h3>Rate Limit Headers</h3>
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>Header</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="param-name">X-RateLimit-Limit</span></td>
+                            <td>The rate limit ceiling for that given request</td>
+                            <td>1000</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">X-RateLimit-Remaining</span></td>
+                            <td>The number of requests left for the time window</td>
+                            <td>999</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">X-RateLimit-Reset</span></td>
+                            <td>UTC epoch seconds when the rate limit resets</td>
+                            <td>1640995200</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="create-url" class="content-section">
+                <h2>Create Short URL</h2>
+                
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <div>
+                            <span class="endpoint-method method-post">POST</span>
+                            <span class="endpoint-url">/urls</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Create a new shortened URL with optional customization options.
+                        </div>
+                    </div>
+                    <div class="endpoint-body">
+                        <h4>Request Body Parameters</h4>
+                        <table class="param-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Required</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="param-name">original_url</span></td>
+                                    <td><span class="param-type">string</span></td>
+                                    <td><span class="param-required">Required</span></td>
+                                    <td>The original URL to be shortened</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">custom_short_code</span></td>
+                                    <td><span class="param-type">string</span></td>
+                                    <td><span class="param-optional">Optional</span></td>
+                                    <td>Custom short code (3-50 characters)</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">expires_at</span></td>
+                                    <td><span class="param-type">datetime</span></td>
+                                    <td><span class="param-optional">Optional</span></td>
+                                    <td>ISO 8601 expiration date</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">title</span></td>
+                                    <td><span class="param-type">string</span></td>
+                                    <td><span class="param-optional">Optional</span></td>
+                                    <td>Title for the link (max 200 characters)</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">password</span></td>
+                                    <td><span class="param-type">string</span></td>
+                                    <td><span class="param-optional">Optional</span></td>
+                                    <td>Password protection for the link</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">tags</span></td>
+                                    <td><span class="param-type">array</span></td>
+                                    <td><span class="param-optional">Optional</span></td>
+                                    <td>Array of tags for organization</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="code-example">
+                            <div class="code-tabs">
+                                <button class="code-tab active" data-tab="curl-create">cURL</button>
+                                <button class="code-tab" data-tab="js-create">JavaScript</button>
+                                <button class="code-tab" data-tab="python-create">Python</button>
+                            </div>
+                            <div class="code-content">
+                                <div class="code-tab-content active" id="curl-create">
+                                    <pre><code>curl -X POST \
+  https://api.shortlink.com/v1/urls \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "original_url": "https://example.com/very-long-url",
+    "custom_short_code": "my-link",
+    "title": "My Custom Link",
+    "expires_at": "2024-12-31T23:59:59Z",
+    "tags": ["marketing", "campaign"]
+  }'</code></pre>
+                                </div>
+                                <div class="code-tab-content" id="js-create">
+                                    <pre><code>const createUrl = async () => {
+  const response = await fetch('https://api.shortlink.com/v1/urls', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer YOUR_API_KEY',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      original_url: 'https://example.com/very-long-url',
+      custom_short_code: 'my-link',
+      title: 'My Custom Link',
+      expires_at: '2024-12-31T23:59:59Z',
+      tags: ['marketing', 'campaign']
+    })
+  });
+  
+  const data = await response.json();
+  console.log(data);
+};</code></pre>
+                                </div>
+                                <div class="code-tab-content" id="python-create">
+                                    <pre><code>import requests
+
+url = "https://api.shortlink.com/v1/urls"
+headers = {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+}
+
+data = {
+    "original_url": "https://example.com/very-long-url",
+    "custom_short_code": "my-link",
+    "title": "My Custom Link",
+    "expires_at": "2024-12-31T23:59:59Z",
+    "tags": ["marketing", "campaign"]
+}
+
+response = requests.post(url, headers=headers, json=data)
+result = response.json()</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4>Success Response (201)</h4>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Response</span>
+                            </div>
+                            <pre><code>{
+  "short_code": "my-link",
+  "short_url": "https://short.ly/my-link",
+  "original_url": "https://example.com/very-long-url",
+  "title": "My Custom Link",
+  "created_at": "2024-01-23T10:30:00Z",
+  "expires_at": "2024-12-31T23:59:59Z",
+  "qr_code": "https://api.short.ly/qr/my-link",
+  "password_protected": false,
+  "tags": ["marketing", "campaign"],
+  "click_count": 0,
+  "status": "active"
+}</code></pre>
+                        </div>
+
+                        <h4>Response Codes</h4>
+                        <div class="response-codes">
+                            <div class="response-code response-201">
+                                <div class="response-code-number">201</div>
+                                <div class="response-code-text">URL created successfully</div>
+                            </div>
+                            <div class="response-code response-400">
+                                <div class="response-code-number">400</div>
+                                <div class="response-code-text">Invalid request data</div>
+                            </div>
+                            <div class="response-code response-401">
+                                <div class="response-code-number">401</div>
+                                <div class="response-code-text">Invalid API key</div>
+                            </div>
+                            <div class="response-code response-429">
+                                <div class="response-code-number">429</div>
+                                <div class="response-code-text">Rate limit exceeded</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="url-analytics" class="content-section">
+                <h2>URL Analytics</h2>
+                
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <div>
+                            <span class="endpoint-method method-get">GET</span>
+                            <span class="endpoint-url">/analytics/{short_code}</span>
+                        </div>
+                        <div class="endpoint-description">
+                            Get detailed analytics for a specific short URL.
+                        </div>
+                    </div>
+                    <div class="endpoint-body">
+                        <h4>Query Parameters</h4>
+                        <table class="param-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Required</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="param-name">period</span></td>
+                                    <td><span class="param-type">string</span></td>
+                                    <td><span class="param-optional">Optional</span></td>
+                                    <td>Time period: 1h, 24h, 7d, 30d, 90d, all (default: 30d)</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="param-name">breakdown</span></td>
+                                    <td><span class="param-type">string</span></td>
+                                    <td><span class="param-optional">Optional</span></td>
+                                    <td>Data breakdown: hour, day, week, month (default: day)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="code-example">
+                            <div class="code-tabs">
+                                <button class="code-tab active" data-tab="curl-analytics">cURL</button>
+                                <button class="code-tab" data-tab="js-analytics">JavaScript</button>
+                                <button class="code-tab" data-tab="python-analytics">Python</button>
+                            </div>
+                            <div class="code-content">
+                                <div class="code-tab-content active" id="curl-analytics">
+                                    <pre><code>curl -X GET \
+  'https://api.shortlink.com/v1/analytics/my-link?period=7d&breakdown=day' \
+  -H 'Authorization: Bearer YOUR_API_KEY'</code></pre>
+                                </div>
+                                <div class="code-tab-content" id="js-analytics">
+                                    <pre><code>const getAnalytics = async (shortCode) => {
+  const response = await fetch(
+    `https://api.shortlink.com/v1/analytics/${shortCode}?period=7d&breakdown=day`,
+    {
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY'
+      }
+    }
+  );
+  
+  const analytics = await response.json();
+  console.log(analytics);
+};</code></pre>
+                                </div>
+                                <div class="code-tab-content" id="python-analytics">
+                                    <pre><code>import requests
+
+short_code = "my-link"
+url = f"https://api.shortlink.com/v1/analytics/{short_code}"
+params = {"period": "7d", "breakdown": "day"}
+headers = {'Authorization': 'Bearer YOUR_API_KEY'}
+
+response = requests.get(url, params=params, headers=headers)
+analytics = response.json()</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4>Success Response (200)</h4>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span>Response</span>
+                            </div>
+                            <pre><code>{
+  "short_code": "my-link",
+  "period": "7d",
+  "total_clicks": 156,
+  "unique_visitors": 89,
+  "click_rate": 0.57,
+  "top_countries": {
+    "US": 67,
+    "GB": 23,
+    "DE": 18,
+    "CA": 12
+  },
+  "top_referrers": {
+    "direct": 45,
+    "twitter.com": 34,
+    "google.com": 28,
+    "facebook.com": 18
+  },
+  "devices": {
+    "mobile": 89,
+    "desktop": 52,
+    "tablet": 15
+  },
+  "browsers": {
+    "Chrome": 78,
+    "Safari": 34,
+    "Firefox": 23,
+    "Edge": 21
+  },
+  "daily_breakdown": [
+    {"date": "2024-01-17", "clicks": 23, "unique": 18},
+    {"date": "2024-01-18", "clicks": 31, "unique": 24},
+    {"date": "2024-01-19", "clicks": 18, "unique": 15},
+    {"date": "2024-01-20", "clicks": 28, "unique": 19},
+    {"date": "2024-01-21", "clicks": 34, "unique": 22},
+    {"date": "2024-01-22", "clicks": 22, "unique": 16}
+  ]
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sdks" class="content-section">
+                <h2>SDKs & Libraries</h2>
+                <p>We provide official SDKs and libraries to make integration easier:</p>
+
+                <div class="sdk-grid">
+                    <div class="sdk-card">
+                        <div class="sdk-icon sdk-python">
+                            <i class="fab fa-python"></i>
+                        </div>
+                        <h3>Python SDK</h3>
+                        <p>Official Python library with async support</p>
+                        <div class="code-example">
+                            <pre><code>pip install shortlink-python</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="sdk-card">
+                        <div class="sdk-icon sdk-javascript">
+                            <i class="fab fa-js-square"></i>
+                        </div>
+                        <h3>JavaScript SDK</h3>
+                        <p>Works in Node.js and browsers</p>
+                        <div class="code-example">
+                            <pre><code>npm install shortlink-js</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="sdk-card">
+                        <div class="sdk-icon sdk-php">
+                            <i class="fab fa-php"></i>
+                        </div>
+                        <h3>PHP SDK</h3>
+                        <p>PHP library with Laravel support</p>
+                        <div class="code-example">
+                            <pre><code>composer require shortlink/php</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="sdk-card">
+                        <div class="sdk-icon sdk-curl">
+                            <i class="fas fa-terminal"></i>
+                        </div>
+                        <h3>REST API</h3>
+                        <p>Direct HTTP requests with any language</p>
+                        <div class="code-example">
+                            <pre><code>curl -X POST ...</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Python SDK Example</h3>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span>Python SDK Usage</span>
+                    </div>
+                    <pre><code>from shortlink import ShortLinkClient
+
+# Initialize client
+client = ShortLinkClient(api_key='YOUR_API_KEY')
+
+# Create a short URL
+url = client.urls.create(
+    original_url='https://example.com/very-long-url',
+    custom_short_code='my-link',
+    title='My Custom Link'
+)
+
+print(f"Short URL: {url.short_url}")
+
+# Get analytics
+analytics = client.analytics.get('my-link', period='7d')
+print(f"Total clicks: {analytics.total_clicks}")
+
+# List all URLs
+urls = client.urls.list(limit=50)
+for url in urls:
+    print(f"{url.short_code}: {url.click_count} clicks")</code></pre>
+                </div>
+            </section>
+
+            <section id="errors" class="content-section">
+                <h2>Error Handling</h2>
+                <p>The ShortLink API uses standard HTTP response codes to indicate success or failure of requests.</p>
+
+                <h3>Error Response Format</h3>
+                <div class="code-example">
+                    <div class="code-header">
+                        <span>Error Response</span>
+                    </div>
+                    <pre><code>{
+  "error": {
+    "code": "INVALID_URL",
+    "message": "The provided URL is not valid",
+    "details": {
+      "field": "original_url",
+      "reason": "Invalid URL format"
+    }
+  },
+  "request_id": "req_1234567890abcdef"
+}</code></pre>
+                </div>
+
+                <h3>Common Error Codes</h3>
+                <table class="param-table">
+                    <thead>
+                        <tr>
+                            <th>HTTP Code</th>
+                            <th>Error Code</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>400</td>
+                            <td>INVALID_URL</td>
+                            <td>The provided URL is not valid</td>
+                        </tr>
+                        <tr>
+                            <td>400</td>
+                            <td>SHORT_CODE_TAKEN</td>
+                            <td>The custom short code is already in use</td>
+                        </tr>
+                        <tr>
+                            <td>401</td>
+                            <td>INVALID_API_KEY</td>
+                            <td>The API key is invalid or missing</td>
+                        </tr>
+                        <tr>
+                            <td>404</td>
+                            <td>URL_NOT_FOUND</td>
+                            <td>The requested URL was not found</td>
+                        </tr>
+                        <tr>
+                            <td>429</td>
+                            <td>RATE_LIMIT_EXCEEDED</td>
+                            <td>Too many requests, rate limit exceeded</td>
+                        </tr>
+                        <tr>
+                            <td>500</td>
+                            <td>INTERNAL_ERROR</td>
+                            <td>An internal server error occurred</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script>
+        // Code tab switching
+        document.addEventListener('DOMContentLoaded', () => {
+            const codeTabs = document.querySelectorAll('.code-tab');
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+            codeTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabGroup = tab.closest('.code-tabs');
+                    const contentContainer = tab.closest('.code-example').querySelector('.code-content');
+                    
+                    // Remove active class from all tabs in this group
+                    tabGroup.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+                    contentContainer.querySelectorAll('.code-tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and corresponding content
+                    tab.classList.add('active');
+                    const targetTab = tab.getAttribute('data-tab');
+                    document.getElementById(targetTab).classList.add('active');
+                });
+            });
+
+            // Sidebar navigation
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const target = document.querySelector(link.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                        
+                        // Update active sidebar link
+                        sidebarLinks.forEach(l => l.classList.remove('active'));
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+            // Update active sidebar link on scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        sidebarLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { threshold: 0.3 });
+
+            document.querySelectorAll('.content-section').forEach(section => {
+                observer.observe(section);
+            });
+
+            // Copy code functionality
+            document.querySelectorAll('.copy-code-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const code = btn.closest('.code-example').querySelector('pre code').textContent;
+                    try {
+                        await navigator.clipboard.writeText(code);
+                        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                        setTimeout(() => {
+                            btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                        }, 2000);
+                    } catch (err) {
+                        console.error('Failed to copy code:', err);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

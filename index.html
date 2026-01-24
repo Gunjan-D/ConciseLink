@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConciseLink - Professional URL Shortener</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-link"></i>
+                <span>ConciseLink</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#api" class="nav-link">API</a>
+                <a href="#analytics" class="nav-link">Analytics</a>
+                <a href="#pricing" class="nav-link">Pricing</a>
+            </div>
+            <div class="nav-auth">
+                <button class="btn-secondary">Sign In</button>
+                <button class="btn-primary">Get Started</button>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- URL Shortener Tool -->
+        <section class="shortener-section">
+            <div class="container">
+                <div class="shortener-card">
+                    <h2>Try it now</h2>
+                    <div class="url-form">
+                        <div class="input-group">
+                            <input type="url" id="originalUrl" placeholder="Enter your long URL here..." required>
+                            <button type="button" id="shortenBtn" class="btn-primary">
+                                <i class="fas fa-compress-alt"></i>
+                                Shorten URL
+                            </button>
+                        </div>
+                        <div class="advanced-options" id="advancedOptions" style="display: none;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Custom Short Code (optional)</label>
+                                    <input type="text" id="customCode" placeholder="my-custom-link">
+                                </div>
+                                <div class="form-group">
+                                    <label>Expiration Date (optional)</label>
+                                    <input type="date" id="expirationDate">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Title (optional)</label>
+                                    <input type="text" id="linkTitle" placeholder="My Important Link">
+                                </div>
+                                <div class="form-group">
+                                    <label>Password Protection (optional)</label>
+                                    <input type="password" id="linkPassword" placeholder="Set a password">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="toggle-advanced" id="toggleAdvanced">
+                            <i class="fas fa-cog"></i> Advanced Options
+                        </button>
+                    </div>
+
+                    <!-- Results Section -->
+                    <div class="results-section" id="resultsSection" style="display: none;">
+                        <div class="result-card">
+                            <div class="result-header">
+                                <h3>Your shortened URL is ready!</h3>
+                                <span class="status-badge">Active</span>
+                            </div>
+                            <div class="result-urls">
+                                <div class="url-row">
+                                    <label>Original URL:</label>
+                                    <div class="url-display" id="resultOriginalUrl"></div>
+                                </div>
+                                <div class="url-row featured">
+                                    <label>Short URL:</label>
+                                    <div class="url-display" id="resultShortUrl"></div>
+                                    <button class="copy-btn" id="copyBtn">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="result-actions">
+                                <button class="btn-secondary" id="viewAnalytics">
+                                    <i class="fas fa-chart-line"></i>
+                                    View Analytics
+                                </button>
+                                <button class="btn-secondary" id="generateQR">
+                                    <i class="fas fa-qrcode"></i>
+                                    Generate QR Code
+                                </button>
+                                <button class="btn-secondary" id="editLink">
+                                    <i class="fas fa-edit"></i>
+                                    Edit Link
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Demo Examples -->
+                    <div class="demo-examples">
+                        <h3>Try these examples:</h3>
+                        <div class="example-links">
+                            <button class="example-btn" data-url="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+                                <i class="fab fa-youtube"></i>
+                                YouTube Video
+                            </button>
+                            <button class="example-btn" data-url="https://github.com/fastapi/fastapi">
+                                <i class="fab fa-github"></i>
+                                GitHub Repository
+                            </button>
+                            <button class="example-btn" data-url="https://docs.python.org/3/tutorial/">
+                                <i class="fab fa-python"></i>
+                                Python Documentation
+                            </button>
+                            <button class="example-btn" data-url="https://aws.amazon.com/dynamodb/">
+                                <i class="fab fa-aws"></i>
+                                AWS DynamoDB
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="toast">
+        <div class="toast-content">
+            <i class="fas fa-check-circle"></i>
+            <span class="toast-message">URL copied to clipboard!</span>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

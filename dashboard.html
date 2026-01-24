@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShortLink Analytics Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .dashboard {
+            background: var(--light-color);
+            min-height: 100vh;
+            padding-top: 70px;
+        }
+        
+        .dashboard-header {
+            background: white;
+            padding: 30px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+        
+        .dashboard-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .dashboard-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+        
+        .dashboard-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .time-filter {
+            display: flex;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+        
+        .time-filter button {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+        
+        .time-filter button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .date-range {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--secondary-color);
+        }
+        
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            border-left: 4px solid var(--primary-color);
+            transition: var(--transition);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        
+        .stat-card.danger { border-left-color: var(--danger-color); }
+        .stat-card.success { border-left-color: var(--success-color); }
+        .stat-card.warning { border-left-color: var(--warning-color); }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+        
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+        
+        .stat-icon.primary { background: var(--primary-color); }
+        .stat-icon.success { background: var(--success-color); }
+        .stat-icon.warning { background: var(--warning-color); }
+        .stat-icon.danger { background: var(--danger-color); }
+        
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 5px;
+        }
+        
+        .stat-change {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .stat-change.positive {
+            color: var(--success-color);
+        }
+        
+        .stat-change.negative {
+            color: var(--danger-color);
+        }
+        
+        .stat-change.neutral {
+            color: var(--secondary-color);
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .chart-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chart-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.85rem;
+        }
+        
+        .chart-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .chart-canvas {
+            height: 300px;
+        }
+        
+        .top-list {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            overflow: hidden;
+        }
+        
+        .top-list-header {
+            padding: 20px;
+            background: var(--light-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .top-list-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .top-list-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+        
+        .top-list-item:hover {
+            background: var(--light-color);
+        }
+        
+        .top-list-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .item-flag {
+            font-size: 1.2rem;
+        }
+        
+        .item-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: white;
+            background: var(--secondary-color);
+        }
+        
+        .item-name {
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        .item-value {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+        }
+        
+        .url-table {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            padding: 20px;
+            background: var(--light-color);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .table-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .table-content {
+            overflow-x: auto;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .data-table th {
+            background: var(--light-color);
+            font-weight: 600;
+            color: var(--dark-color);
+            font-size: 0.9rem;
+        }
+        
+        .data-table tr:hover {
+            background: var(--light-color);
+        }
+        
+        .url-cell {
+            max-width: 300px;
+        }
+        
+        .url-short {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        .url-short:hover {
+            text-decoration: underline;
+        }
+        
+        .url-original {
+            color: var(--secondary-color);
+            font-size: 0.85rem;
+            margin-top: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+        }
+        
+        .status-expired {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+        }
+        
+        .actions-cell {
+            white-space: nowrap;
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--secondary-color);
+            cursor: pointer;
+            padding: 5px;
+            margin: 0 2px;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+        
+        .action-btn:hover {
+            background: var(--light-color);
+            color: var(--primary-color);
+        }
+        
+        .realtime-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--success-color);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .bottom-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .dashboard-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-link"></i>
+                <span>ShortLink</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="demo.html" class="nav-link">Demo</a>
+                <a href="api-docs.html" class="nav-link">API Docs</a>
+                <a href="#dashboard" class="nav-link">Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <div class="container">
+                <div class="dashboard-nav">
+                    <h1 class="dashboard-title">Analytics Dashboard</h1>
+                    <div class="realtime-indicator">
+                        <div class="pulse-dot"></div>
+                        Live Data
+                    </div>
+                </div>
+                
+                <div class="dashboard-controls">
+                    <div class="time-filter">
+                        <button class="time-filter-btn" data-period="1h">1H</button>
+                        <button class="time-filter-btn" data-period="24h">24H</button>
+                        <button class="time-filter-btn active" data-period="7d">7D</button>
+                        <button class="time-filter-btn" data-period="30d">30D</button>
+                        <button class="time-filter-btn" data-period="90d">90D</button>
+                    </div>
+                    
+                    <div class="date-range">
+                        <i class="fas fa-calendar"></i>
+                        <span id="dateRange">Last 7 days</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Stats Overview -->
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Total Clicks</span>
+                        <div class="stat-icon primary">
+                            <i class="fas fa-mouse-pointer"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="totalClicks">12,847</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+23.5% from last period</span>
+                    </div>
+                </div>
+
+                <div class="stat-card success">
+                    <div class="stat-header">
+                        <span class="stat-label">Unique Visitors</span>
+                        <div class="stat-icon success">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="uniqueVisitors">8,923</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+18.2% from last period</span>
+                    </div>
+                </div>
+
+                <div class="stat-card warning">
+                    <div class="stat-header">
+                        <span class="stat-label">Total URLs</span>
+                        <div class="stat-icon warning">
+                            <i class="fas fa-link"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="totalUrls">1,456</div>
+                    <div class="stat-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+7 new today</span>
+                    </div>
+                </div>
+
+                <div class="stat-card danger">
+                    <div class="stat-header">
+                        <span class="stat-label">Conversion Rate</span>
+                        <div class="stat-icon danger">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value">69.4%</div>
+                    <div class="stat-change neutral">
+                        <i class="fas fa-minus"></i>
+                        <span>No change</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts and Top Lists -->
+            <div class="dashboard-grid">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Clicks Over Time</h3>
+                        <div class="chart-actions">
+                            <button class="chart-btn">
+                                <i class="fas fa-download"></i>
+                                Export
+                            </button>
+                            <button class="chart-btn">
+                                <i class="fas fa-expand"></i>
+                                Fullscreen
+                            </button>
+                        </div>
+                    </div>
+                    <canvas id="clicksChart" class="chart-canvas"></canvas>
+                </div>
+
+                <div class="top-list">
+                    <div class="top-list-header">
+                        <h3 class="top-list-title">Top Countries</h3>
+                    </div>
+                    <div class="top-list-item">
+                        <div class="item-info">
+                            <span class="item-flag">🇺🇸</span>
+                            <span class="item-name">United States</span>
+                        </div>
+                        <span class="item-value">42%</span>
+                    </div>
+                    <div class="top-list-item">
+                        <div class="item-info">
+                            <span class="item-flag">🇬🇧</span>
+                            <span class="item-name">United Kingdom</span>
+                        </div>
+                        <span class="item-value">18%</span>
+                    </div>
+                    <div class="top-list-item">
+                        <div class="item-info">
+                            <span class="item-flag">🇩🇪</span>
+                            <span class="item-name">Germany</span>
+                        </div>
+                        <span class="item-value">12%</span>
+                    </div>
+                    <div class="top-list-item">
+                        <div class="item-info">
+                            <span class="item-flag">🇨🇦</span>
+                            <span class="item-name">Canada</span>
+                        </div>
+                        <span class="item-value">8%</span>
+                    </div>
+                    <div class="top-list-item">
+                        <div class="item-info">
+                            <span class="item-flag">🇦🇺</span>
+                            <span class="item-name">Australia</span>
+                        </div>
+                        <span class="item-value">6%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Grid -->
+            <div class="bottom-grid">
+                <!-- Recent URLs Table -->
+                <div class="url-table">
+                    <div class="table-header">
+                        <h3 class="table-title">Recent URLs</h3>
+                        <div class="table-actions">
+                            <button class="chart-btn">
+                                <i class="fas fa-plus"></i>
+                                New URL
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-content">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>URL</th>
+                                    <th>Clicks</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="url-cell">
+                                        <a href="#" class="url-short">short.ly/demo123</a>
+                                        <div class="url-original">https://example.com/very-long-url...</div>
+                                    </td>
+                                    <td>1,234</td>
+                                    <td><span class="status-badge status-active">Active</span></td>
+                                    <td class="actions-cell">
+                                        <button class="action-btn" title="View Analytics">
+                                            <i class="fas fa-chart-line"></i>
+                                        </button>
+                                        <button class="action-btn" title="Copy URL">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                        <button class="action-btn" title="Edit URL">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="url-cell">
+                                        <a href="#" class="url-short">short.ly/github-repo</a>
+                                        <div class="url-original">https://github.com/fastapi/fastapi</div>
+                                    </td>
+                                    <td>892</td>
+                                    <td><span class="status-badge status-active">Active</span></td>
+                                    <td class="actions-cell">
+                                        <button class="action-btn" title="View Analytics">
+                                            <i class="fas fa-chart-line"></i>
+                                        </button>
+                                        <button class="action-btn" title="Copy URL">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                        <button class="action-btn" title="Edit URL">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="url-cell">
+                                        <a href="#" class="url-short">short.ly/expired-link</a>
+                                        <div class="url-original">https://example.com/expired-content</div>
+                                    </td>
+                                    <td>456</td>
+                                    <td><span class="status-badge status-expired">Expired</span></td>
+                                    <td class="actions-cell">
+                                        <button class="action-btn" title="View Analytics">
+                                            <i class="fas fa-chart-line"></i>
+                                        </button>
+                                        <button class="action-btn" title="Copy URL">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                        <button class="action-btn" title="Renew">
+                                            <i class="fas fa-redo"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Top Referrers -->
+                <div class="top-list">
+                    <div class="top-list-header">
+                        <h3 class="top-list-title">Top Referrers</h3>
+                    </div>
+                    <div class="top-list-item">
+                        <div class="item-info">
+                            <div class="item-icon" style="background: #1da1f2;">
+                                <i class="fab fa-twitter"></i>
+                            </div>
+                            <span class="item-name">twitter.com</span>
+                        </div>
+                        <span class="item-value">2,847</span>
+                    </div>
+                    <div class="top-list-item">
+                        <div class="item-info">
+                            <div class="item-icon" style="background: #4267b2;">
+                                <i class="fab fa-facebook"></i>
+                            </div>
+                            <span class="item-name">facebook.com</span>
+                        </div>
+                        <span class="item-value">1,923</span>
+                    </div>
+                    <div class="top-list-item">
+                        <div class="item-info">
+                            <div class="item-icon" style="background: #4285f4;">
+                                <i class="fab fa-google"></i>
+                            </div>
+                            <span class="item-name">google.com</span>
+                        </div>
+                        <span class="item-value">1,456</span>
+                    </div>
+                    <div class="top-list-item">
+                        <div class="item-info">
+                            <div class="item-icon" style="background: #0077b5;">
+                                <i class="fab fa-linkedin"></i>
+                            </div>
+                            <span class="item-name">linkedin.com</span>
+                        </div>
+                        <span class="item-value">987</span>
+                    </div>
+                    <div class="top-list-item">
+                        <div class="item-info">
+                            <div class="item-icon" style="background: #6c757d;">
+                                <i class="fas fa-link"></i>
+                            </div>
+                            <span class="item-name">Direct</span>
+                        </div>
+                        <span class="item-value">754</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class AnalyticsDashboard {
+            constructor() {
+                this.charts = {};
+                this.currentPeriod = '7d';
+                this.initializeCharts();
+                this.bindEvents();
+                this.startRealTimeUpdates();
+            }
+
+            initializeCharts() {
+                this.createClicksChart();
+            }
+
+            createClicksChart() {
+                const ctx = document.getElementById('clicksChart').getContext('2d');
+                
+                // Generate sample data for the last 7 days
+                const labels = [];
+                const data = [];
+                const now = new Date();
+                
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date(now);
+                    date.setDate(date.getDate() - i);
+                    labels.push(date.toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric' 
+                    }));
+                    data.push(Math.floor(Math.random() * 2000) + 500);
+                }
+
+                this.charts.clicks = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Clicks',
+                            data: data,
+                            borderColor: '#0066ff',
+                            backgroundColor: 'rgba(0, 102, 255, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#0066ff',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6,
+                            pointHoverRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#6c757d'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    color: '#6c757d',
+                                    callback: function(value) {
+                                        return value.toLocaleString();
+                                    }
+                                }
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        },
+                        elements: {
+                            point: {
+                                hoverBackgroundColor: '#0066ff'
+                            }
+                        }
+                    }
+                });
+            }
+
+            bindEvents() {
+                // Time filter buttons
+                const timeFilterBtns = document.querySelectorAll('.time-filter-btn');
+                timeFilterBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        timeFilterBtns.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        
+                        const period = btn.getAttribute('data-period');
+                        this.changePeriod(period);
+                    });
+                });
+
+                // Action buttons
+                document.querySelectorAll('.action-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const action = btn.getAttribute('title');
+                        this.handleAction(action, btn);
+                    });
+                });
+
+                // Chart export buttons
+                document.querySelectorAll('.chart-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const btnText = btn.textContent.trim();
+                        if (btnText.includes('Export')) {
+                            this.exportChart();
+                        } else if (btnText.includes('Fullscreen')) {
+                            this.toggleFullscreen(btn.closest('.chart-container'));
+                        }
+                    });
+                });
+            }
+
+            changePeriod(period) {
+                this.currentPeriod = period;
+                
+                // Update date range display
+                const dateRangeElement = document.getElementById('dateRange');
+                const periodLabels = {
+                    '1h': 'Last hour',
+                    '24h': 'Last 24 hours', 
+                    '7d': 'Last 7 days',
+                    '30d': 'Last 30 days',
+                    '90d': 'Last 90 days'
+                };
+                dateRangeElement.textContent = periodLabels[period];
+                
+                // Update chart data based on period
+                this.updateChartData(period);
+                
+                // Update stats
+                this.updateStats(period);
+            }
+
+            updateChartData(period) {
+                const chart = this.charts.clicks;
+                const labels = [];
+                const data = [];
+                
+                const periods = {
+                    '1h': { count: 12, unit: 'minute', step: 5 },
+                    '24h': { count: 24, unit: 'hour', step: 1 },
+                    '7d': { count: 7, unit: 'day', step: 1 },
+                    '30d': { count: 30, unit: 'day', step: 1 },
+                    '90d': { count: 18, unit: 'day', step: 5 }
+                };
+                
+                const config = periods[period];
+                const now = new Date();
+                
+                for (let i = config.count - 1; i >= 0; i--) {
+                    const date = new Date(now);
+                    
+                    if (config.unit === 'minute') {
+                        date.setMinutes(date.getMinutes() - (i * config.step));
+                        labels.push(date.toLocaleTimeString('en-US', { 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                        }));
+                    } else if (config.unit === 'hour') {
+                        date.setHours(date.getHours() - (i * config.step));
+                        labels.push(date.toLocaleTimeString('en-US', { 
+                            hour: '2-digit' 
+                        }));
+                    } else {
+                        date.setDate(date.getDate() - (i * config.step));
+                        labels.push(date.toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric' 
+                        }));
+                    }
+                    
+                    // Generate realistic data based on period
+                    let baseValue = period === '1h' ? 10 : 
+                                   period === '24h' ? 50 :
+                                   period === '7d' ? 800 :
+                                   period === '30d' ? 600 :
+                                   400;
+                    
+                    data.push(Math.floor(Math.random() * baseValue) + baseValue/2);
+                }
+                
+                chart.data.labels = labels;
+                chart.data.datasets[0].data = data;
+                chart.update('none');
+            }
+
+            updateStats(period) {
+                // Simulate different stats for different periods
+                const statsConfig = {
+                    '1h': { clicks: '423', visitors: '187', change: '+12.3%' },
+                    '24h': { clicks: '3,847', visitors: '2,156', change: '+18.7%' },
+                    '7d': { clicks: '12,847', visitors: '8,923', change: '+23.5%' },
+                    '30d': { clicks: '45,621', visitors: '31,204', change: '+31.2%' },
+                    '90d': { clicks: '128,430', visitors: '87,612', change: '+28.9%' }
+                };
+                
+                const stats = statsConfig[period];
+                document.getElementById('totalClicks').textContent = stats.clicks;
+                document.getElementById('uniqueVisitors').textContent = stats.visitors;
+                
+                // Update change indicators
+                const changeElements = document.querySelectorAll('.stat-change.positive span');
+                changeElements[0].textContent = `${stats.change} from last period`;
+                changeElements[1].textContent = `${stats.change} from last period`;
+            }
+
+            handleAction(action, button) {
+                const row = button.closest('tr');
+                const shortUrl = row ? row.querySelector('.url-short').textContent : '';
+                
+                switch (action) {
+                    case 'View Analytics':
+                        this.showToast(`Opening analytics for ${shortUrl}`, 'info');
+                        break;
+                    case 'Copy URL':
+                        this.copyToClipboard(`https://${shortUrl}`);
+                        break;
+                    case 'Edit URL':
+                        this.showToast(`Opening editor for ${shortUrl}`, 'info');
+                        break;
+                    case 'Renew':
+                        this.showToast(`Renewing ${shortUrl}`, 'success');
+                        break;
+                }
+            }
+
+            async copyToClipboard(text) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                    this.showToast('URL copied to clipboard!', 'success');
+                } catch (err) {
+                    this.showToast('Failed to copy URL', 'error');
+                }
+            }
+
+            exportChart() {
+                const canvas = document.getElementById('clicksChart');
+                const url = canvas.toDataURL('image/png');
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `shortlink-analytics-${this.currentPeriod}.png`;
+                a.click();
+                
+                this.showToast('Chart exported successfully!', 'success');
+            }
+
+            toggleFullscreen(container) {
+                if (!document.fullscreenElement) {
+                    container.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+
+            startRealTimeUpdates() {
+                // Simulate real-time updates every 30 seconds
+                setInterval(() => {
+                    this.updateRealTimeData();
+                }, 30000);
+                
+                // Update every 5 seconds for demo purposes
+                setInterval(() => {
+                    this.simulateNewClick();
+                }, 5000);
+            }
+
+            updateRealTimeData() {
+                // Update current period data slightly
+                if (this.charts.clicks && Math.random() < 0.7) {
+                    const chart = this.charts.clicks;
+                    const lastIndex = chart.data.datasets[0].data.length - 1;
+                    const currentValue = chart.data.datasets[0].data[lastIndex];
+                    const newValue = currentValue + Math.floor(Math.random() * 10) + 1;
+                    
+                    chart.data.datasets[0].data[lastIndex] = newValue;
+                    chart.update('none');
+                }
+            }
+
+            simulateNewClick() {
+                // Randomly update stats
+                if (Math.random() < 0.3) {
+                    const totalClicksEl = document.getElementById('totalClicks');
+                    const currentClicks = parseInt(totalClicksEl.textContent.replace(/,/g, ''));
+                    const newClicks = currentClicks + Math.floor(Math.random() * 3) + 1;
+                    totalClicksEl.textContent = newClicks.toLocaleString();
+                }
+                
+                if (Math.random() < 0.2) {
+                    const uniqueVisitorsEl = document.getElementById('uniqueVisitors');
+                    const currentVisitors = parseInt(uniqueVisitorsEl.textContent.replace(/,/g, ''));
+                    const newVisitors = currentVisitors + Math.floor(Math.random() * 2) + 1;
+                    uniqueVisitorsEl.textContent = newVisitors.toLocaleString();
+                }
+            }
+
+            showToast(message, type = 'info') {
+                // Create toast element
+                const toast = document.createElement('div');
+                toast.className = 'toast show';
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 100px;
+                    right: 20px;
+                    background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8'};
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease;
+                `;
+                
+                toast.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                        <span>${message}</span>
+                    </div>
+                `;
+                
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            }
+        }
+
+        // Initialize dashboard when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new AnalyticsDashboard();
+        });
+    </script>
+</body>
+</html>
