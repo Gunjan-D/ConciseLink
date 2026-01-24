@@ -1,6 +1,8 @@
-# ShortLink Demo Website
+# ConciseLink Demo Website
 
-A comprehensive demo website showcasing the ShortLink URL shortener service with live examples, interactive features, and professional documentation.
+## 🌐 [**LIVE DEMO - Try ConciseLink Now!**](https://gunjan-d.github.io/ConciseLink)
+
+A comprehensive demo website showcasing the ConciseLink URL shortener service with live examples, interactive features, and professional documentation.
 
 ## 🎯 Overview
 
