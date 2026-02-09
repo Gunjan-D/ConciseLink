@@ -1,10 +1,10 @@
 # ConciseLink Demo Website
 
-## 🌐 [**Try ConciseLink Now!**](https://gunjan-d.github.io/ConciseLink)
+## [**Try ConciseLink Now!**](https://gunjan-d.github.io/ConciseLink)
 
 A comprehensive demo website showcasing the ConciseLink URL shortener service with live examples, interactive features, and professional documentation.
 
-## 🎯 Overview
+## Overview
 
 This website demonstrates a production-ready URL shortening service similar to bit.ly or tinyurl.com, built with modern web technologies and featuring:
 
@@ -13,7 +13,7 @@ This website demonstrates a production-ready URL shortening service similar to b
 - **Comprehensive API Documentation** - Complete REST API docs with code examples
 - **Professional Design** - Modern, responsive UI with smooth animations
 
-## 📁 Files Structure
+## Files Structure
 
 ```
 website/
@@ -25,7 +25,7 @@ website/
 └── app.js             # Interactive JavaScript functionality
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Option 1: Open Directly in Browser
 1. Navigate to the `website` folder
@@ -48,7 +48,7 @@ php -S localhost:8000
 
 Then open `http://localhost:8000` in your browser.
 
-## 🌟 Features Demonstrated
+## Features Demonstrated
 
 ### 1. **Main Landing Page** (`index.html`)
 - Hero section with compelling value proposition
@@ -106,7 +106,7 @@ Then open `http://localhost:8000` in your browser.
 - **Response time measurements**
 - **Uptime status indicators**
 
-## 🎨 Design Features
+## Design Features
 
 - **Modern UI/UX** with clean, professional design
 - **Fully responsive** - works on desktop, tablet, and mobile
@@ -140,7 +140,7 @@ Then open `http://localhost:8000` in your browser.
 - Smooth transitions and animations
 - Modern card-based design system
 
-## 📊 Demo Data
+## Demo Data
 
 The website includes realistic demo data:
 - **Sample URLs** from popular platforms (YouTube, GitHub, AWS, Python docs)
@@ -148,7 +148,7 @@ The website includes realistic demo data:
 - **Performance metrics** showing sub-second response times
 - **User interaction** simulation with live updates
 
-## 🌐 Pages Overview
+## Pages Overview
 
 ### Home Page (`index.html`)
 The main landing page featuring:
@@ -183,7 +183,7 @@ Analytics interface featuring:
 - URL management table
 - Export capabilities
 
-## 🎯 Use Cases Demonstrated
+## Use Cases Demonstrated
 
 1. **Marketing Campaigns** - Track click-through rates
 2. **Social Media Sharing** - Clean, branded short URLs
@@ -192,7 +192,7 @@ Analytics interface featuring:
 5. **API Integration** - Developer-friendly documentation
 6. **Enterprise Usage** - Scalable, professional solution
 
-## 💡 Key Selling Points Highlighted
+## Key Selling Points Highlighted
 
 - **Reliability** - 99.99% uptime guarantee
 - **Speed** - Sub-50ms response times globally
@@ -202,7 +202,7 @@ Analytics interface featuring:
 - **API-First** - Developer-friendly integration
 - **Professional** - Enterprise-grade features
 
-## 🚀 Next Steps for Users
+## Next Steps for Users
 
 After exploring the demo:
 1. **Sign up** for a free account
@@ -211,7 +211,7 @@ After exploring the demo:
 4. **Upgrade** to paid plans for advanced features
 5. **Contact sales** for enterprise solutions
 
-## 📱 Mobile Experience
+## Mobile Experience
 
 The website is fully responsive and provides an excellent mobile experience:
 - Touch-friendly interface
